@@ -53,6 +53,9 @@ public class MovieProvider {
         movie.setGenre(genre);
         movie.setYear(year);
         DocumentReference docRef = movieCollection.document(movie.getId());
+        if (isDuplicateTitle(movie)) {
+            throw new IllegalArgumentException("Movie title already exists!");
+        }
         if (validMovie(movie, docRef)) {
             docRef.set(movie);
         } else {
@@ -63,6 +66,9 @@ public class MovieProvider {
     public void addMovie(Movie movie) {
         DocumentReference docRef = movieCollection.document();
         movie.setId(docRef.getId());
+        if (isDuplicateTitle(movie)) {
+            throw new IllegalArgumentException("Movie title already exists!");
+        }
         if (validMovie(movie, docRef)) {
             docRef.set(movie);
         } else {
@@ -81,5 +87,14 @@ public class MovieProvider {
 
     public static void setInstanceForTesting(FirebaseFirestore firestore) {
         movieProvider = new MovieProvider(firestore);
+    }
+
+    private boolean isDuplicateTitle(Movie movie) {
+        for (Movie m : movies) {
+            if (!m.getId().equals(movie.getId()) && m.getTitle().equalsIgnoreCase(movie.getTitle())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

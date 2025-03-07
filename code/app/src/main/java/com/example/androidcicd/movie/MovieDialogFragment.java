@@ -105,12 +105,17 @@ public class MovieDialogFragment extends DialogFragment {
                 String title = editMovieName.getText().toString().trim();
                 String genre = editMovieGenre.getText().toString().trim();
                 int year = Integer.parseInt(editMovieYear.getText().toString().trim());
-                if (tag != null && tag.equals( "Movie Details")) {
-                    movieProvider.updateMovie(movie, title, genre, year);
-                } else {
-                    movieProvider.addMovie(new Movie(title, genre, year));
+                try {
+                    if (tag != null && tag.equals("Movie Details")) {
+                        movieProvider.updateMovie(movie, title, genre, year);
+                    } else {
+                        movieProvider.addMovie(new Movie(title, genre, year));
+                    }
+                    dialog.dismiss();
+
+                } catch (IllegalArgumentException e) {
+                    editMovieName.setError(e.getMessage());
                 }
-                dialog.dismiss();
             });
         });
         return dialog;
