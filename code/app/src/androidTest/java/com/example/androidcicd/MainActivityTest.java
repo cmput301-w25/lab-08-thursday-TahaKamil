@@ -1,6 +1,5 @@
 package com.example.androidcicd;
 
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.longClick;
@@ -11,14 +10,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.Matchers.anything;
-
 import android.util.Log;
 
-import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
-import androidx.test.espresso.idling.CountingIdlingResource;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
@@ -58,7 +53,7 @@ public class MainActivityTest {
     }
 
     @Before
-    public void seedDatabase() {
+    public void seedDatabase() throws InterruptedException {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference moviesRef = db.collection("movies");
         Movie[] movies = {
@@ -71,6 +66,8 @@ public class MainActivityTest {
             movie.setId(docRef.getId());
             docRef.set(movie);
         }
+
+        Thread.sleep(3000);
     }
 
     @Test
@@ -128,28 +125,15 @@ public class MainActivityTest {
     @Test
     public void appShouldDisplayExistingMoviesOnLaunch() {
         // Check that the initial data is loaded
-        CountingIdlingResource idlingResource = new CountingIdlingResource("MoviesLoader");
-        IdlingRegistry.getInstance().register(idlingResource);
+        onView(withText("Oppenheimer")).check(matches(isDisplayed()));
+        onView(withText("Barbie")).check(matches(isDisplayed()));
 
-        // Perform test
-        onData(anything()).inAdapterView(withId(R.id.listviewMovies))
-                .atPosition(0)
-                .onChildView(withText("Oppenheimer"))
-                .check(matches(isDisplayed()));
-
-        onData(anything()).inAdapterView(withId(R.id.listviewMovies))
-                .atPosition(0)
-                .onChildView(withText("Barbie"))
-                .check(matches(isDisplayed()));
-
-        IdlingRegistry.getInstance().unregister(idlingResource);
-
-        // Click on Barbie
-        onView(withText("Barbie")).perform(click());
+        // Click on Oppenheimer
+        onView(withText("Oppenheimer")).perform(click());
 
         // Check that the movie details are displayed correctly
-        onView(withId(R.id.edit_title)).check(matches(withText("Barbie")));
-        onView(withId(R.id.edit_genre)).check(matches(withText("Comedy/Fantasy")));
+        onView(withId(R.id.edit_title)).check(matches(withText("Oppenheimer")));
+        onView(withId(R.id.edit_genre)).check(matches(withText("Thriller/Historical Drama")));
         onView(withId(R.id.edit_year)).check(matches(withText("2023")));
     }
 
