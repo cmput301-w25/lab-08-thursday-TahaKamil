@@ -127,11 +127,11 @@ public class MainActivityTest {
         onView(withText("Barbie")).check(matches(isDisplayed()));
 
         // Click on Oppenheimer
-        onView(withText("Oppenheimer")).perform(click());
+        onView(withText("Barbie")).perform(click());
 
         // Check that the movie details are displayed correctly
-        onView(withId(R.id.edit_title)).check(matches(withText("Oppenheimer")));
-        onView(withId(R.id.edit_genre)).check(matches(withText("Thriller/Historical Drama")));
+        onView(withId(R.id.edit_title)).check(matches(withText("Barbie")));
+        onView(withId(R.id.edit_genre)).check(matches(withText("Comedy/Fantasy")));
         onView(withId(R.id.edit_year)).check(matches(withText("2023")));
     }
 
