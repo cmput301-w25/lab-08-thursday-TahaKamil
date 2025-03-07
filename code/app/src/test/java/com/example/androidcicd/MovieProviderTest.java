@@ -92,4 +92,22 @@ public class MovieProviderTest {
         // Call update movie, which should throw an error due to having an empty name
         movieProvider.updateMovie(movie, "", "Another Genre", 2026);
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddMovieShouldThrowErrorForDuplicateTitle() {
+        // Create a first movie with title "Inception"
+        Movie movie1 = new Movie("Inception", "Sci-Fi", 2010);
+        when(mockDocRef.getId()).thenReturn("doc1");
+        movie1.setId("doc1");
+        // Seed the provider's local list to simulate existing movie data.
+        movieProvider.getMovies().add(movie1);
+
+        // Create a second movie with the same title "Inception"
+        Movie movie2 = new Movie("Inception", "Action", 2011);
+        // Simulate a different document id for the new movie.
+        when(mockDocRef.getId()).thenReturn("doc2");
+
+        // This should throw an exception because the title is a duplicate.
+        movieProvider.addMovie(movie2);
+    }
 }

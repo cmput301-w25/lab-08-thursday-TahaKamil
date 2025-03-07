@@ -69,7 +69,7 @@ public class MainActivityTest {
     }
 
     @Test
-    public void addMovieShouldAddValidMovieToMovieList() {
+    public void addMovieShouldAddValidMovieToMovieList() throws InterruptedException {
         // Click on button to open addMovie dialog
         onView(withId(R.id.buttonAddMovie)).perform(click());
 
@@ -80,6 +80,7 @@ public class MainActivityTest {
 
         // Submit Form
         onView(withId(android.R.id.button1)).perform(click());
+        Thread.sleep(2000);
 
         // Check that our movie list has our new movie
         onView(withText("Interstellar")).check(matches(isDisplayed()));
@@ -99,6 +100,24 @@ public class MainActivityTest {
 
         // Check that an error is shown to the user
         onView(withId(R.id.edit_title)).check(matches(hasErrorText("Movie name cannot be empty!")));
+    }
+
+    @Test
+    public void addMovieShouldShowErrorForDuplicateMovieName() {
+        // Open the add movie dialog.
+        onView(withId(R.id.buttonAddMovie)).perform(click());
+
+        // Enter details for a movie with a duplicate title.
+        // "Oppenheimer" is already seeded in the database.
+        onView(withId(R.id.edit_title)).perform(ViewActions.typeText("Oppenheimer"));
+        onView(withId(R.id.edit_genre)).perform(ViewActions.typeText("Thriller/Historical Drama"));
+        onView(withId(R.id.edit_year)).perform(ViewActions.typeText("2023"));
+
+        // Submit the form.
+        onView(withId(android.R.id.button1)).perform(click());
+
+        // Check that an error is shown on the title field.
+        onView(withId(R.id.edit_title)).check(matches(hasErrorText("Movie title already exists!")));
     }
 
     @Test
